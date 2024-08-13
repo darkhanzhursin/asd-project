@@ -4,6 +4,7 @@ import org.reflections.Reflections;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -17,16 +18,22 @@ public class FWContext {
             Reflections reflections = new Reflections(clazz.getPackageName());
             scannAndInstatiateServiceClasses(reflections);
             performDI();
+
+            for (Object serviceObject : serviceObjectList) {
+                for (Method method : serviceObject.getClass().getDeclaredMethods()) {
+                    method.invoke(serviceObject);
+                }
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
-    private void scannAndInstatiateServiceClasses(Reflections reflections) throws InstantiationException, IllegalAccessException, NoSuchMethodException, InvocationTargetException {
+    private void scannAndInstatiateServiceClasses(Reflections reflections) throws InstantiationException, IllegalAccessException {
         // find and instantiate all classes annotated with the @Service annotation
         Set<Class<?>> servicetypes = reflections.getTypesAnnotatedWith(Service.class);
         for (Class<?> serviceClass : servicetypes) {
-            serviceObjectList.add((Object) serviceClass.getDeclaredConstructor().newInstance());
+            serviceObjectList.add((Object) (Object) serviceClass.newInstance());
         }
     }
 
