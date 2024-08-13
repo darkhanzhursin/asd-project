@@ -13,6 +13,7 @@ public class FWContext {
     private static List<Object> serviceObjectList = new ArrayList<>();
 
     public void start(Class<?> clazz) {
+        System.out.println("Starting the framework");
         try {
             Reflections reflections = new Reflections(clazz.getPackageName());
             scannAndInstatiateServiceClasses(reflections);
