@@ -11,15 +11,17 @@ import java.util.Set;
 
 public class FWContext {
 
+    private static List<Object> componentObjectList = new ArrayList<>();
     private static List<Object> serviceObjectList = new ArrayList<>();
 
     public void start(Class<?> clazz) {
         try {
             Reflections reflections = new Reflections(clazz.getPackageName());
             scannAndInstatiateServiceClasses(reflections);
+            scannAndInstatiateComponentClasses(reflections);
             performDI();
 
-            for (Object serviceObject : serviceObjectList) {
+            for (Object serviceObject : componentObjectList) {
                 for (Method method : serviceObject.getClass().getDeclaredMethods()) {
                     method.invoke(serviceObject);
                 }
@@ -29,19 +31,28 @@ public class FWContext {
         }
     }
 
-    private void scannAndInstatiateServiceClasses(Reflections reflections) throws InstantiationException, IllegalAccessException {
+    private void scannAndInstatiateComponentClasses(Reflections reflections) throws InstantiationException,
+            IllegalAccessException, NoSuchMethodException, InvocationTargetException {
+        // find and instantiate all classes annotated with the @Component annotation
+        Set<Class<?>> types = reflections.getTypesAnnotatedWith(Component.class);
+        for (Class<?> implementationClass : types) {
+            componentObjectList.add(implementationClass.getDeclaredConstructor().newInstance());
+        }
+    }
+
+    private void scannAndInstatiateServiceClasses(Reflections reflections) throws InstantiationException, IllegalAccessException, NoSuchMethodException, InvocationTargetException {
         // find and instantiate all classes annotated with the @Service annotation
         Set<Class<?>> servicetypes = reflections.getTypesAnnotatedWith(Service.class);
         for (Class<?> serviceClass : servicetypes) {
-            serviceObjectList.add((Object) (Object) serviceClass.newInstance());
+            serviceObjectList.add(serviceClass.getDeclaredConstructor().newInstance());
         }
     }
 
     private void performDI() {
         try {
-            for (Object serviceObject : serviceObjectList) {
+            for (Object componentObject : componentObjectList) {
                 // for fields
-                for (Field field : serviceObject.getClass().getDeclaredFields()) {
+                for (Field field : componentObject.getClass().getDeclaredFields()) {
                     if (field.isAnnotationPresent(Autowired.class)) {
                         // get the type of the field
                         Class<?> theFieldType =field.getType();
@@ -49,7 +60,7 @@ public class FWContext {
                         Object instance = getServiceBeanOftype(theFieldType);
                         //do the injection
                         field.setAccessible(true);
-                        field.set(serviceObject, instance);
+                        field.set(componentObject, instance);
                     }
                 }
                 // TODO

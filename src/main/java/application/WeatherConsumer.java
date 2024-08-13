@@ -1,9 +1,9 @@
 package application;
 
 import framework.Autowired;
-import framework.Service;
+import framework.Component;
 
-@Service
+@Component
 public class WeatherConsumer {
     private final String city = "Fairfield";
 
