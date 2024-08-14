@@ -57,7 +57,7 @@ public class FWContext {
                         // get the type of the field
                         Class<?> theFieldType =field.getType();
                         //get the object instance of this type
-                        Object instance = getServiceBeanOftype(theFieldType);
+                        Object instance = getServiceBeanOfType(theFieldType);
                         //do the injection
                         field.setAccessible(true);
                         field.set(componentObject, instance);
@@ -72,7 +72,7 @@ public class FWContext {
         }
     }
 
-    private Object getServiceBeanOftype(Class interfaceClass) {
+    public Object getServiceBeanOfType(Class interfaceClass) {
         Object service = null;
         try {
             for (Object theClass : serviceObjectList) {
