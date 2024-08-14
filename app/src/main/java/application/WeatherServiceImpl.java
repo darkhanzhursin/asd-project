@@ -1,12 +1,14 @@
 package application;
 
 import framework.annotations.Autowired;
+import framework.annotations.Qualifier;
 import framework.annotations.Service;
 
 @Service
 public class WeatherServiceImpl implements WeatherService {
 
     //@Autowired
+    @Qualifier(name = "application.Logger")
     private Logger logger;
 
     public WeatherServiceImpl() {

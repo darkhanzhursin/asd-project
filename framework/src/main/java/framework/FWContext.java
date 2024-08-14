@@ -112,4 +112,8 @@ public class FWContext {
     public Map<String, Object> getServiceObjectMap() {
         return serviceObjectMap;
     }
+
+    public Object getServiceBeanWithName(String className) {
+        return serviceObjectMap.get(className);
+    }
 }
