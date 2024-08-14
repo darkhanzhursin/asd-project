@@ -1,25 +1,26 @@
 package framework;
 
+import framework.annotations.Autowired;
+import framework.annotations.Profile;
+import framework.annotations.Service;
+import framework.handlers.ServiceObjectHandler;
 import org.reflections.Reflections;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Properties;
-import java.util.Set;
+import java.util.*;
 
 public class FWContext {
 
-    private static List<Object> serviceObjectList = new ArrayList<>();
+    private static Map<String, Object> serviceObjectMap = new HashMap<>();
     private String activeProfile;
 
     public void start(Class<?> clazz) {
         try {
             Reflections reflections = new Reflections(clazz.getPackageName());
             scannAndInstatiateServiceClasses(reflections);
-            performDI(clazz);
             performContextSetup();
+            performDI(clazz);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -29,13 +30,13 @@ public class FWContext {
         // find and instantiate all classes annotated with the @Service annotation
         Set<Class<?>> servicetypes = reflections.getTypesAnnotatedWith(Service.class);
         for (Class<?> serviceClass : servicetypes) {
-            serviceObjectList.add(serviceClass.getDeclaredConstructor().newInstance());
+            serviceObjectMap.put(serviceClass.getName(), serviceClass.getDeclaredConstructor().newInstance());
         }
     }
 
     private void performDI(Class<?> applicationClass) {
         try {
-//            // create instance of the application class
+            // create instance of the application class
             Object applicationObject = applicationClass.getDeclaredConstructor().newInstance();
             // find annotated fields
             for (Field field : applicationObject.getClass().getDeclaredFields()) {
@@ -58,37 +59,61 @@ public class FWContext {
         }
     }
 
-    private Object getServiceBeanOfType(Class interfaceClass) {
-        Object service = null;
+    public Object getServiceBeanOfType(Class interfaceClass) {
+        List<Object> objectList = new ArrayList<>();
         try {
-            for (Object theClass : serviceObjectList) {
+            for (Object theClass : serviceObjectMap.values()) {
                 Class<?>[] interfaces = theClass.getClass().getInterfaces();
 
                 for (Class<?> theInterface : interfaces) {
                     if (theInterface.getName().contentEquals(interfaceClass.getName()))
-                        service = theClass;
+                       objectList.add(theClass);
                 }
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
-        return service;
+
+        if (objectList.size() == 1) return objectList.get(0);
+        if (objectList.size() > 1) {
+            for (Object theObject : objectList) {
+                String profilevalue = theObject.getClass().getAnnotation(Profile.class).value();
+                if (profilevalue.contentEquals(activeProfile)) {
+                    return theObject;
+                }
+            }
+        }
+
+        // if the class has no interface
+        try {
+            for (Object instance : serviceObjectMap.values()) {
+                if (instance.getClass().getName().contentEquals(interfaceClass.getName()))
+                    return instance;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 
     private void performContextSetup() {
         Properties properties = ConfigFileReader.readConfigFile();
         activeProfile = properties.getProperty("activeprofile");
-//        ServiceObjectHandler handler= HandlerFactory.getChainHandler(this);
-//        try {
-//            for (Object serviceObject : serviceObjectMap.values()) {
-//                createAssyncProxy(serviceObject);
-//            }
-//            for (Object serviceObject : serviceObjectMap.values()) {
-//                handler.handle(serviceObject);
-//            }
-//
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//        }
+        ServiceObjectHandler handler= Handler.getChainHandler(this);
+        try {
+            for (Object serviceObject : serviceObjectMap.values()) {
+                handler.handle(serviceObject);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public Map<String, Object> getServiceObjectMap() {
+        return serviceObjectMap;
+    }
+
+    public Object getServiceBeanWithName(String className) {
+        return serviceObjectMap.get(className);
     }
 }

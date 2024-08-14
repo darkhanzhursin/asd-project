@@ -1,4 +1,4 @@
-package framework;
+package framework.annotations;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;

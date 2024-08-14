@@ -1,6 +1,6 @@
 package application;
 
-import framework.Autowired;
+import framework.annotations.Autowired;
 import framework.FWApplication;
 
 public class Application implements Runnable {
