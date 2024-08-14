@@ -1,5 +1,8 @@
 package framework;
 
+import framework.annotations.Autowired;
+import framework.annotations.Service;
+import framework.handlers.ServiceObjectHandler;
 import org.reflections.Reflections;
 
 import java.lang.reflect.Field;
@@ -18,8 +21,8 @@ public class FWContext {
         try {
             Reflections reflections = new Reflections(clazz.getPackageName());
             scannAndInstatiateServiceClasses(reflections);
-            performDI(clazz);
             performContextSetup();
+            performDI(clazz);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -58,27 +61,43 @@ public class FWContext {
         }
     }
 
-    private Object getServiceBeanOfType(Class interfaceClass) {
-        Object service = null;
+    public Object getServiceBeanOfType(Class interfaceClass) {
+        //Object service = null;
         try {
             for (Object theClass : serviceObjectList) {
                 Class<?>[] interfaces = theClass.getClass().getInterfaces();
 
                 for (Class<?> theInterface : interfaces) {
                     if (theInterface.getName().contentEquals(interfaceClass.getName()))
-                        service = theClass;
+                        return theClass;
                 }
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
-        return service;
+        // if the class has no interface
+        try {
+            for (Object instance : serviceObjectList) {
+                if (instance.getClass().getName().contentEquals(interfaceClass.getName()))
+                    return instance;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 
     private void performContextSetup() {
         Properties properties = ConfigFileReader.readConfigFile();
         activeProfile = properties.getProperty("activeprofile");
-//        ServiceObjectHandler handler= HandlerFactory.getChainHandler(this);
+        ServiceObjectHandler handler= Handler.getChainHandler(this);
+        try {
+            for (Object serviceObject : serviceObjectList) {
+                handler.handle(serviceObject);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 //        try {
 //            for (Object serviceObject : serviceObjectMap.values()) {
 //                createAssyncProxy(serviceObject);
@@ -90,5 +109,9 @@ public class FWContext {
 //        } catch (Exception e) {
 //            e.printStackTrace();
 //        }
+    }
+
+    public List<Object> getServiceObjectList() {
+        return serviceObjectList;
     }
 }

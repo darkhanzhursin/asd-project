@@ -1,12 +1,25 @@
 package application;
 
-import framework.Service;
+import framework.annotations.Autowired;
+import framework.annotations.Service;
 
 @Service
 public class WeatherServiceImpl implements WeatherService {
 
+    @Autowired
+    private Logger logger;
+
+    public WeatherServiceImpl() {
+    }
+
+//    @Autowired
+//    public WeatherServiceImpl(Logger logger) {
+//        this.logger = logger;
+//    }
+
     @Override
     public String getCurrentWeather(String cityName) {
+        logger.log("weather for " + cityName);
         return "The current weather in " + cityName + " is sunny with a temperature of 25°C.";
     }
 
