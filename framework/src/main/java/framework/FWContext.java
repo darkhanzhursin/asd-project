@@ -1,6 +1,7 @@
 package framework;
 
 import framework.annotations.Autowired;
+import framework.annotations.Profile;
 import framework.annotations.Service;
 import framework.handlers.ServiceObjectHandler;
 import org.reflections.Reflections;
@@ -38,7 +39,7 @@ public class FWContext {
 
     private void performDI(Class<?> applicationClass) {
         try {
-//            // create instance of the application class
+            // create instance of the application class
             Object applicationObject = applicationClass.getDeclaredConstructor().newInstance();
             // find annotated fields
             for (Field field : applicationObject.getClass().getDeclaredFields()) {
@@ -62,19 +63,30 @@ public class FWContext {
     }
 
     public Object getServiceBeanOfType(Class interfaceClass) {
-        //Object service = null;
+        List<Object> objectList = new ArrayList<>();
         try {
             for (Object theClass : serviceObjectList) {
                 Class<?>[] interfaces = theClass.getClass().getInterfaces();
 
                 for (Class<?> theInterface : interfaces) {
                     if (theInterface.getName().contentEquals(interfaceClass.getName()))
-                        return theClass;
+                       objectList.add(theClass);
                 }
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
+
+        if (objectList.size() == 1) return objectList.get(0);
+        if (objectList.size() > 1) {
+            for (Object theObject : objectList) {
+                String profilevalue = theObject.getClass().getAnnotation(Profile.class).value();
+                if (profilevalue.contentEquals(activeProfile)) {
+                    return theObject;
+                }
+            }
+        }
+
         // if the class has no interface
         try {
             for (Object instance : serviceObjectList) {
@@ -98,17 +110,6 @@ public class FWContext {
         } catch (Exception e) {
             e.printStackTrace();
         }
-//        try {
-//            for (Object serviceObject : serviceObjectMap.values()) {
-//                createAssyncProxy(serviceObject);
-//            }
-//            for (Object serviceObject : serviceObjectMap.values()) {
-//                handler.handle(serviceObject);
-//            }
-//
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//        }
     }
 
     public List<Object> getServiceObjectList() {

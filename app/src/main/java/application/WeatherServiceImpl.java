@@ -6,16 +6,16 @@ import framework.annotations.Service;
 @Service
 public class WeatherServiceImpl implements WeatherService {
 
-    @Autowired
+    //@Autowired
     private Logger logger;
 
     public WeatherServiceImpl() {
     }
 
-//    @Autowired
-//    public WeatherServiceImpl(Logger logger) {
-//        this.logger = logger;
-//    }
+    @Autowired
+    public WeatherServiceImpl(Logger logger) {
+        this.logger = logger;
+    }
 
     @Override
     public String getCurrentWeather(String cityName) {
