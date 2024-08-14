@@ -11,7 +11,7 @@ public class ConfigFileReader {
         String rootPath = Thread.currentThread().getContextClassLoader().getResource("").getPath();
         try {
             prop = new Properties();
-            prop.load(new FileInputStream(rootPath + "/config.properties"));
+            prop.load(new FileInputStream(rootPath + "/application.properties"));
         } catch (Exception e) {
             e.printStackTrace();
         }

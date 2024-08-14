@@ -3,9 +3,13 @@ package application;
 import framework.annotations.Autowired;
 import framework.annotations.Qualifier;
 import framework.annotations.Service;
+import framework.annotations.Value;
 
 @Service
 public class WeatherServiceImpl implements WeatherService {
+
+    @Value(name = "city")
+    String theCity;
 
     //@Autowired
     @Qualifier(name = "application.Logger")
@@ -20,14 +24,14 @@ public class WeatherServiceImpl implements WeatherService {
     }
 
     @Override
-    public String getCurrentWeather(String cityName) {
-        logger.log("weather for " + cityName);
-        return "The current weather in " + cityName + " is sunny with a temperature of 25°C.";
+    public String getCurrentWeather() {
+        logger.log("weather for " + theCity);
+        return "The current weather in " + theCity + " is sunny with a temperature of 25°C.";
     }
 
     @Override
-    public String getWeatherForecast(String cityName) {
-        return "The weather forecast for " + cityName + " is sunny for the next 3 days.";
+    public String getWeatherForecast() {
+        return "The weather forecast for " + theCity + " is sunny for the next 3 days.";
     }
 
     @Override
