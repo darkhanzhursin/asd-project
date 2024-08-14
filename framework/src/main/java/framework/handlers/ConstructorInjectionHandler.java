@@ -20,10 +20,10 @@ public class ConstructorInjectionHandler extends ServiceObjectHandler {
             if (constructor.isAnnotationPresent(Autowired.class)) {
                 Class<?>[] parameterTypes = constructor.getParameterTypes();
                 Class<?> parameterType = parameterTypes[0];
-                Object instance = fwContext.getServiceBeanOfType(parameterType);
+                Object parameterInstance = fwContext.getServiceBeanOfType(parameterType);
                 // do the injection
-                Object serviceInstance = constructor.newInstance(instance);
-                fwContext.getServiceObjectList().add(serviceInstance);
+                Object serviceInstance = constructor.newInstance(parameterInstance);
+                //fwContext.getServiceObjectList().add(serviceInstance);
                 isNewObject = true;
                 nextHandler.handle(serviceInstance);
             }
