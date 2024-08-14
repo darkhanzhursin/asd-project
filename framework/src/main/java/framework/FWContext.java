@@ -18,14 +18,14 @@ public class FWContext {
         try {
             Reflections reflections = new Reflections(clazz.getPackageName());
             scannAndInstatiateServiceClasses(reflections);
-            scannAndInstatiateComponentClasses(reflections);
-            performDI();
+            //scannAndInstatiateComponentClasses(reflections);
+//            performDI();
 
-            for (Object serviceObject : componentObjectList) {
-                for (Method method : serviceObject.getClass().getDeclaredMethods()) {
-                    method.invoke(serviceObject);
-                }
-            }
+//            for (Object serviceObject : componentObjectList) {
+//                for (Method method : serviceObject.getClass().getDeclaredMethods()) {
+//                    method.invoke(serviceObject);
+//                }
+//            }
         } catch (Exception e) {
             e.printStackTrace();
         }
