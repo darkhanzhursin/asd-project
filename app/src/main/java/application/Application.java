@@ -14,9 +14,8 @@ public class Application implements Runnable {
 
     @Override
     public void run() {
-        String city = "Fairfield";
-        System.out.println(weatherService.getCurrentWeather(city));
-        System.out.println(weatherService.getWeatherForecast(city));
+        System.out.println(weatherService.getCurrentWeather());
+        System.out.println(weatherService.getWeatherForecast());
         System.out.println(weatherService.convertCelsiusToFahrenheit(25.0));
     }
 }
