@@ -1,16 +1,20 @@
 package application;
 
 import framework.Autowired;
-import framework.Component;
+import framework.FWApplication;
 
-@Component
-public class WeatherConsumer {
-    private final String city = "Fairfield";
+public class Application implements Runnable {
 
     @Autowired
     private WeatherService weatherService;
 
-    public void consumeWeather() {
+    public static void main(String[] args) {
+        FWApplication.run(Application.class);
+    }
+
+    @Override
+    public void run() {
+        String city = "Fairfield";
         System.out.println(weatherService.getCurrentWeather(city));
         System.out.println(weatherService.getWeatherForecast(city));
         System.out.println(weatherService.convertCelsiusToFahrenheit(25.0));
