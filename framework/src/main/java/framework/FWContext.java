@@ -55,7 +55,7 @@ public class FWContext {
         }
     }
 
-    public Object getServiceBeanOfType(Class interfaceClass) {
+    private Object getServiceBeanOfType(Class interfaceClass) {
         Object service = null;
         try {
             for (Object theClass : serviceObjectList) {
