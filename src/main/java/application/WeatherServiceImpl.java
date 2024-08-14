@@ -1,6 +1,6 @@
 package application;
 
-import framework.Service;
+import framework.annotation.Service;
 
 @Service
 public class WeatherServiceImpl implements WeatherService {
