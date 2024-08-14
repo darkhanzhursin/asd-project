@@ -6,17 +6,20 @@ import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Properties;
 import java.util.Set;
 
 public class FWContext {
 
     private static List<Object> serviceObjectList = new ArrayList<>();
+    private String activeProfile;
 
     public void start(Class<?> clazz) {
         try {
             Reflections reflections = new Reflections(clazz.getPackageName());
             scannAndInstatiateServiceClasses(reflections);
             performDI(clazz);
+            performContextSetup();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -70,5 +73,22 @@ public class FWContext {
             e.printStackTrace();
         }
         return service;
+    }
+
+    private void performContextSetup() {
+        Properties properties = ConfigFileReader.readConfigFile();
+        activeProfile = properties.getProperty("activeprofile");
+//        ServiceObjectHandler handler= HandlerFactory.getChainHandler(this);
+//        try {
+//            for (Object serviceObject : serviceObjectMap.values()) {
+//                createAssyncProxy(serviceObject);
+//            }
+//            for (Object serviceObject : serviceObjectMap.values()) {
+//                handler.handle(serviceObject);
+//            }
+//
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
     }
 }
