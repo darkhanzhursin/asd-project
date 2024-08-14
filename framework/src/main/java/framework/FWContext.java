@@ -8,14 +8,11 @@ import org.reflections.Reflections;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Properties;
-import java.util.Set;
+import java.util.*;
 
 public class FWContext {
 
-    private static List<Object> serviceObjectList = new ArrayList<>();
+    private static Map<String, Object> serviceObjectMap = new HashMap<>();
     private String activeProfile;
 
     public void start(Class<?> clazz) {
@@ -33,7 +30,7 @@ public class FWContext {
         // find and instantiate all classes annotated with the @Service annotation
         Set<Class<?>> servicetypes = reflections.getTypesAnnotatedWith(Service.class);
         for (Class<?> serviceClass : servicetypes) {
-            serviceObjectList.add(serviceClass.getDeclaredConstructor().newInstance());
+            serviceObjectMap.put(serviceClass.getName(), serviceClass.getDeclaredConstructor().newInstance());
         }
     }
 
@@ -65,7 +62,7 @@ public class FWContext {
     public Object getServiceBeanOfType(Class interfaceClass) {
         List<Object> objectList = new ArrayList<>();
         try {
-            for (Object theClass : serviceObjectList) {
+            for (Object theClass : serviceObjectMap.values()) {
                 Class<?>[] interfaces = theClass.getClass().getInterfaces();
 
                 for (Class<?> theInterface : interfaces) {
@@ -89,7 +86,7 @@ public class FWContext {
 
         // if the class has no interface
         try {
-            for (Object instance : serviceObjectList) {
+            for (Object instance : serviceObjectMap.values()) {
                 if (instance.getClass().getName().contentEquals(interfaceClass.getName()))
                     return instance;
             }
@@ -104,7 +101,7 @@ public class FWContext {
         activeProfile = properties.getProperty("activeprofile");
         ServiceObjectHandler handler= Handler.getChainHandler(this);
         try {
-            for (Object serviceObject : serviceObjectList) {
+            for (Object serviceObject : serviceObjectMap.values()) {
                 handler.handle(serviceObject);
             }
         } catch (Exception e) {
@@ -112,7 +109,7 @@ public class FWContext {
         }
     }
 
-    public List<Object> getServiceObjectList() {
-        return serviceObjectList;
+    public Map<String, Object> getServiceObjectMap() {
+        return serviceObjectMap;
     }
 }

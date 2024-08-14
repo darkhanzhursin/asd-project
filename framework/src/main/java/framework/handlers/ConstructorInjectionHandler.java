@@ -23,7 +23,8 @@ public class ConstructorInjectionHandler extends ServiceObjectHandler {
                 Object parameterInstance = fwContext.getServiceBeanOfType(parameterType);
                 // do the injection
                 Object serviceInstance = constructor.newInstance(parameterInstance);
-                //fwContext.getServiceObjectList().add(serviceInstance);
+                // update the old instance to the new one
+                fwContext.getServiceObjectMap().put(serviceInstance.getClass().getName(), serviceInstance);
                 isNewObject = true;
                 nextHandler.handle(serviceInstance);
             }
