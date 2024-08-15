@@ -1,7 +1,5 @@
 package framework;
 
-import java.lang.reflect.Field;
-
 public class FWApplication {
 
     public static void run(Class applicationClass) {

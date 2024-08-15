@@ -11,16 +11,22 @@ public class WeatherServiceImpl implements WeatherService {
     @Value(name = "city")
     String theCity;
 
-    //@Autowired
     @Qualifier(name = "application.Logger")
     private Logger logger;
 
     public WeatherServiceImpl() {
     }
 
+    private IEmailSender emailSender;
+
     @Autowired
     public WeatherServiceImpl(Logger logger) {
         this.logger = logger;
+    }
+
+    @Autowired
+    public void setEmailSender(IEmailSender emailSender) {
+        this.emailSender = emailSender;
     }
 
     @Autowired
@@ -32,6 +38,7 @@ public class WeatherServiceImpl implements WeatherService {
         logger.log("weather for " + theCity);
         System.out.println("The current weather in " + theCity + " is sunny with a temperature of 25°C.");
         publisher.publish(new TempChangeEvent());
+        emailSender.sendEmail("weather for " + theCity);
     }
 
     @Override

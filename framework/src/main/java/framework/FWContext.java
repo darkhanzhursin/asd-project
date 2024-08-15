@@ -1,5 +1,6 @@
 package framework;
 
+import framework.annotations.Async;
 import framework.annotations.Autowired;
 import framework.annotations.Profile;
 import framework.annotations.Service;
@@ -10,6 +11,8 @@ import org.reflections.Reflections;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.lang.reflect.Proxy;
 import java.util.*;
 
 public class FWContext {
@@ -106,6 +109,9 @@ public class FWContext {
         ServiceObjectHandler handler= Handler.getChainHandler(this);
         try {
             for (Object serviceObject : serviceObjectMap.values()) {
+                createAsyncProxy(serviceObject);
+            }
+            for (Object serviceObject : serviceObjectMap.values()) {
                 handler.handle(serviceObject);
             }
         } catch (Exception e) {
@@ -123,5 +129,19 @@ public class FWContext {
 
     public EventContext getEventContext() {
         return eventContext;
+    }
+
+    private void createAsyncProxy(Object serviceObject)  {
+        Method[] methods = serviceObject.getClass().getDeclaredMethods();
+        for (Method method : methods) {
+            if (method.isAnnotationPresent(Async.class)) {
+                //found async method
+                ClassLoader classLoader = serviceObject.getClass().getClassLoader();
+                Class<?>[] interfaces = serviceObject.getClass().getInterfaces();
+                AsyncProxy proxy = new AsyncProxy(serviceObject);
+                Object serviceClassInstance = Proxy.newProxyInstance(classLoader, interfaces, proxy);
+                getServiceObjectMap().put(serviceObject.getClass().getName(), serviceClassInstance);
+            }
+        }
     }
 }
