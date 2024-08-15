@@ -1,9 +1,6 @@
 package application;
 
-import framework.annotations.Autowired;
-import framework.annotations.Qualifier;
-import framework.annotations.Service;
-import framework.annotations.Value;
+import framework.annotations.*;
 
 @Service
 public class WeatherServiceImpl implements WeatherService {
@@ -24,23 +21,28 @@ public class WeatherServiceImpl implements WeatherService {
     }
 
     @Override
-    public String getCurrentWeather() {
+    @Scheduled(cron = "10 0")
+    public void getCurrentWeather() {
         logger.log("weather for " + theCity);
-        return "The current weather in " + theCity + " is sunny with a temperature of 25°C.";
+        System.out.println("The current weather in " + theCity + " is sunny with a temperature of 25°C.");
+    }
+
+
+    @Override
+    @Scheduled(fixedRate = 5000)
+    public void getWeatherForecast() {
+        System.out.println("The weather forecast for " + theCity + " is sunny for the next 3 days.");
     }
 
     @Override
-    public String getWeatherForecast() {
-        return "The weather forecast for " + theCity + " is sunny for the next 3 days.";
+    public void convertCelsiusToFahrenheit(double celsius) {
+        double res = (celsius * 9/5) + 32;
+        System.out.println(res);
     }
 
     @Override
-    public double convertCelsiusToFahrenheit(double celsius) {
-        return (celsius * 9/5) + 32;
-    }
-
-    @Override
-    public double convertFahrenheitToCelsius(double fahrenheit) {
-        return (fahrenheit - 32) * 5/9;
+    public void convertFahrenheitToCelsius(double fahrenheit) {
+        double res = (fahrenheit - 32) * 5/9;
+        System.out.println(res);
     }
 }

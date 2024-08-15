@@ -1,8 +1,8 @@
 package application;
 
 public interface WeatherService {
-    String getCurrentWeather();
-    String getWeatherForecast();
-    double convertCelsiusToFahrenheit(double celsius);
-    double convertFahrenheitToCelsius(double fahrenheit);
+    void getCurrentWeather();
+    void getWeatherForecast();
+    void convertCelsiusToFahrenheit(double celsius);
+    void convertFahrenheitToCelsius(double fahrenheit);
 }
