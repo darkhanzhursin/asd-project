@@ -11,6 +11,9 @@ public class WeatherServiceImpl implements WeatherService {
     @Value(name = "city")
     String theCity;
 
+    @Autowired
+    private SMSSender smsSender;
+
     @Qualifier(name = "application.Logger")
     private Logger logger;
 
@@ -45,6 +48,7 @@ public class WeatherServiceImpl implements WeatherService {
     @Scheduled(fixedRate = 5000)
     public void getWeatherForecast() {
         System.out.println("The weather forecast for " + theCity + " is sunny for the next 3 days.");
+        smsSender.sendSMS();
     }
 
     @Override

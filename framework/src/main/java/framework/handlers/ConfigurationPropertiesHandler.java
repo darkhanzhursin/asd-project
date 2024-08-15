@@ -18,10 +18,10 @@ public class ConfigurationPropertiesHandler extends ServiceObjectHandler {
     public void handle(Object serviceObject) throws IllegalAccessException, InvocationTargetException, InstantiationException {
         Properties props = ConfigFileReader.readConfigFile();
         if (serviceObject.getClass().isAnnotationPresent(ConfigurationProperties.class)) {
+            String prefix = serviceObject.getClass().getAnnotation(ConfigurationProperties.class).prefix();
             for (Field field : serviceObject.getClass().getDeclaredFields()) {
                 Class<?> fieldType = field.getType();
                 if (fieldType.getName().contentEquals("java.lang.String")) {
-                    String prefix = field.getAnnotation(ConfigurationProperties.class).prefix();
                     String toBeInjected = props.getProperty(prefix + "." + field.getName());
                     field.setAccessible(true);
                     field.set(serviceObject, toBeInjected);
