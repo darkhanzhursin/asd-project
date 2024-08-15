@@ -20,7 +20,7 @@ public class EventContext {
     }
 
     public void publish(Object eventObject) throws InvocationTargetException, IllegalAccessException {
-        System.out.println("***************eventObject.getClass().getName() ="+eventObject.getClass().getName());
+        System.out.println("*************** Executing event: " + eventObject.getClass().getName());
         List<EventListenerMethod> eventList = listenerMap.get(eventObject.getClass().getName());
         for (EventListenerMethod eventListenerMethod : eventList) {
             eventListenerMethod.getListenerMethod().invoke(eventListenerMethod.getServiceObject(), eventObject);

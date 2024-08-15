@@ -17,11 +17,11 @@ public class AsyncProxy implements InvocationHandler {
 
     @Override
     public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
-        Method targetMethod= null;
+        Method targetMethod = null;
         Method[] methods = targetObject.getClass().getDeclaredMethods();
-        for (Method theMethod : methods){
-            if (theMethod.getName().equals(method.getName())){
-                targetMethod= theMethod;
+        for (Method theMethod : methods) {
+            if (theMethod.getName().equals(method.getName())) {
+                targetMethod = theMethod;
             }
         }
         if (targetMethod != null && targetMethod.isAnnotationPresent(Async.class)) {

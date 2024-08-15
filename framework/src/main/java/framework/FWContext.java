@@ -1,9 +1,6 @@
 package framework;
 
-import framework.annotations.Async;
-import framework.annotations.Autowired;
-import framework.annotations.Profile;
-import framework.annotations.Service;
+import framework.annotations.*;
 import framework.events.EventContext;
 import framework.events.EventPublisher;
 import framework.handlers.ServiceObjectHandler;
@@ -143,5 +140,9 @@ public class FWContext {
                 getServiceObjectMap().put(serviceObject.getClass().getName(), serviceClassInstance);
             }
         }
+    }
+
+    private void createAopProxy(Object serviceObject) {
+
     }
 }

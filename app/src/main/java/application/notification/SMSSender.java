@@ -1,4 +1,4 @@
-package application;
+package application.notification;
 
 import framework.annotations.ConfigurationProperties;
 import framework.annotations.Service;
