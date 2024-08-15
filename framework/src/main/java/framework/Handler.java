@@ -6,7 +6,8 @@ public class Handler {
 
     public static ServiceObjectHandler getChainHandler(FWContext fwContext) {
         LastHandler lastHandler = new LastHandler(null, fwContext);
-        ScheduledMethodsHandler scheduledMethodsHandler = new ScheduledMethodsHandler(lastHandler, fwContext);
+        EventHandler eventHandler = new EventHandler(lastHandler, fwContext);
+        ScheduledMethodsHandler scheduledMethodsHandler = new ScheduledMethodsHandler(eventHandler, fwContext);
         ValueInjectionHandler valueInjectionHandler = new ValueInjectionHandler(scheduledMethodsHandler, fwContext);
         SetterInjectionHandler setterInjectionHandler = new SetterInjectionHandler(valueInjectionHandler, fwContext);
         FieldInjectionHandler fieldInjectionHandler = new FieldInjectionHandler(setterInjectionHandler, fwContext);

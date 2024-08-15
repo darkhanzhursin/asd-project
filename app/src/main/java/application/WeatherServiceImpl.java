@@ -1,6 +1,9 @@
 package application;
 
 import framework.annotations.*;
+import framework.events.EventPublisher;
+
+import java.lang.reflect.InvocationTargetException;
 
 @Service
 public class WeatherServiceImpl implements WeatherService {
@@ -20,13 +23,16 @@ public class WeatherServiceImpl implements WeatherService {
         this.logger = logger;
     }
 
+    @Autowired
+    EventPublisher publisher;
+
     @Override
     @Scheduled(cron = "10 0")
-    public void getCurrentWeather() {
+    public void getCurrentWeather() throws InvocationTargetException, IllegalAccessException {
         logger.log("weather for " + theCity);
         System.out.println("The current weather in " + theCity + " is sunny with a temperature of 25°C.");
+        publisher.publish(new TempChangeEvent());
     }
-
 
     @Override
     @Scheduled(fixedRate = 5000)
