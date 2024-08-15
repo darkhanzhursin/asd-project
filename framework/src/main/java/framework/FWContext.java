@@ -3,6 +3,8 @@ package framework;
 import framework.annotations.Autowired;
 import framework.annotations.Profile;
 import framework.annotations.Service;
+import framework.events.EventContext;
+import framework.events.EventPublisher;
 import framework.handlers.ServiceObjectHandler;
 import org.reflections.Reflections;
 
@@ -14,12 +16,12 @@ public class FWContext {
 
     private static Map<String, Object> serviceObjectMap = new HashMap<>();
     private String activeProfile;
+    EventContext eventContext = new EventContext();
 
     public void start(Class<?> clazz) {
         try {
             Reflections reflections = new Reflections(clazz.getPackageName());
             scannAndInstatiateServiceClasses(reflections);
-            performContextSetup();
             performDI(clazz);
         } catch (Exception e) {
             e.printStackTrace();
@@ -32,6 +34,8 @@ public class FWContext {
         for (Class<?> serviceClass : servicetypes) {
             serviceObjectMap.put(serviceClass.getName(), serviceClass.getDeclaredConstructor().newInstance());
         }
+        serviceObjectMap.put("publisher", new EventPublisher(eventContext));
+        performContextSetup();
     }
 
     private void performDI(Class<?> applicationClass) {
@@ -115,5 +119,9 @@ public class FWContext {
 
     public Object getServiceBeanWithName(String className) {
         return serviceObjectMap.get(className);
+    }
+
+    public EventContext getEventContext() {
+        return eventContext;
     }
 }
