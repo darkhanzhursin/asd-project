@@ -1,5 +1,9 @@
 package application;
 
+import application.event.TempChangeEvent;
+import application.notification.ISender;
+import application.notification.SMSSender;
+import application.temperature.IMeasureTemp;
 import framework.annotations.*;
 import framework.events.EventPublisher;
 
@@ -20,7 +24,7 @@ public class WeatherServiceImpl implements WeatherService {
     public WeatherServiceImpl() {
     }
 
-    private IEmailSender emailSender;
+    private ISender emailSender;
 
     @Autowired
     public WeatherServiceImpl(Logger logger) {
@@ -28,12 +32,15 @@ public class WeatherServiceImpl implements WeatherService {
     }
 
     @Autowired
-    public void setEmailSender(IEmailSender emailSender) {
+    public void setEmailSender(ISender emailSender) {
         this.emailSender = emailSender;
     }
 
     @Autowired
     EventPublisher publisher;
+
+    @Autowired
+    private IMeasureTemp measureTemp;
 
     @Override
     @Scheduled(cron = "10 0")
@@ -51,15 +58,21 @@ public class WeatherServiceImpl implements WeatherService {
         smsSender.sendSMS();
     }
 
-    @Override
-    public void convertCelsiusToFahrenheit(double celsius) {
-        double res = (celsius * 9/5) + 32;
-        System.out.println(res);
-    }
+//    @Override
+//    public void convertCelsiusToFahrenheit(double celsius) {
+//        double res = (celsius * 9/5) + 32;
+//        System.out.println(res);
+//    }
+//
+//    @Override
+//    public void convertFahrenheitToCelsius(double fahrenheit) {
+//        double res = (fahrenheit - 32) * 5/9;
+//        System.out.println(res);
+//    }
+
 
     @Override
-    public void convertFahrenheitToCelsius(double fahrenheit) {
-        double res = (fahrenheit - 32) * 5/9;
-        System.out.println(res);
+    public void convert() {
+        measureTemp.getTemperature(40);
     }
 }

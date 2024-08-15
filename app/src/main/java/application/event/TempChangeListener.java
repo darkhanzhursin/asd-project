@@ -1,4 +1,4 @@
-package application;
+package application.event;
 
 import framework.annotations.EventListener;
 import framework.annotations.Service;
